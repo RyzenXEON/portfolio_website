@@ -54,7 +54,7 @@ class ResponsiveLayout extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        if (constraints.maxWidth < 950) {
+        if (constraints.maxWidth < 1200) {
           // Adjusted breakpoint for 2-column layout
           return mobileBody;
         } else {

@@ -41,12 +41,12 @@ class SkillsSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SectionTitle(title: 'My Skills'),
+        const SectionTitle(title: 'My Skills'), // Assuming SectionTitle is in its own file
         const SizedBox(height: 40),
         Wrap(
           spacing: 24,
           runSpacing: 24,
-          alignment: WrapAlignment.start,
+          alignment: isMobile ? WrapAlignment.center : WrapAlignment.start,
           children: skillsData.map((skillItem) {
             return SkillCard(
               icon: skillItem['icon'] as IconData,
@@ -60,7 +60,6 @@ class SkillsSection extends StatelessWidget {
   }
 }
 
-// --- NEW: SKILL CARD WIDGET ---
 class SkillCard extends StatefulWidget {
   final IconData icon;
   final String category;
@@ -83,47 +82,66 @@ class _SkillCardState extends State<SkillCard> {
   @override
   Widget build(BuildContext context) {
     final isMobile = MediaQuery.of(context).size.width < 950;
-
+    
     return MouseRegion(
       onEnter: (_) => setState(() => _isHovered = true),
       onExit: (_) => setState(() => _isHovered = false),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        width: isMobile ? double.infinity : 260,
+        // Enforce a fixed size for symmetry
+        width: isMobile ? double.infinity : 250,
+        height: 320,
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
-          color: const Color(0xFF1E1E1E),
-          borderRadius: BorderRadius.circular(8),
+          // Add a subtle gradient
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              const Color(0xFF1E1E1E),
+              _isHovered ? const Color(0xFF2a2a2a) : const Color(0xFF1E1E1E),
+            ],
+          ),
+          borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: _isHovered ? kAccentColor : Colors.transparent,
+            color: _isHovered ? kAccentColor : Colors.white10,
             width: 1.5,
           ),
           boxShadow: _isHovered
               ? [
                   BoxShadow(
-                    color: kAccentColor.withOpacity(0.1),
-                    blurRadius: 10,
-                    spreadRadius: 2,
+                    color: kAccentColor.withOpacity(0.15),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
                   ),
                 ]
               : [],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          // Use MainAxisAlignment.spaceBetween to push content apart
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Icon(widget.icon, color: kAccentColor, size: 40),
-            const SizedBox(height: 20),
-            Text(
-              widget.category,
-              style: const TextStyle(
-                color: kTextColor,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+            // Top part of the card
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(widget.icon, color: kAccentColor, size: 44),
+                const SizedBox(height: 20),
+                Text(
+                  widget.category,
+                  style: const TextStyle(
+                    color: kTextColor,
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 16),
-            ...widget.skills.map(
-              (skill) => Padding(
+            // Bottom part of the card
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: widget.skills.map((skill) => Padding(
                 padding: const EdgeInsets.only(bottom: 8.0),
                 child: Text(
                   '• $skill',
@@ -133,7 +151,7 @@ class _SkillCardState extends State<SkillCard> {
                     height: 1.3,
                   ),
                 ),
-              ),
+              )).toList(),
             ),
           ],
         ),
